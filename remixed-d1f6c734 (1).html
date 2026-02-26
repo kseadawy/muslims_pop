@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html id="htmlRoot" lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕌 Muslims in Texas</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&family=Inter:wght@300;400;600;700;900&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+/* ── THEMES ── */
+:root{
+  --bg:#060c18;--card:#0b1424;--card2:#0e1a30;
+  --gold:#c8a84b;--gold2:#f0d878;--teal:#00c9a7;
+  --red:#e05c5c;--orange:#ff9020;--blue:#3a7bd5;--purple:#7c4dff;--green:#27ae60;
+  --text:#eee8d0;--muted:#7a90ab;--border:rgba(200,168,75,0.15);
+  --nav-bg:#0b1424;--header-bg:rgba(200,168,75,.08);
+}
+[data-theme="light"]{
+  --bg:#f4f1eb;--card:#ffffff;--card2:#f9f6f0;
+  --gold:#8a6a1a;--gold2:#c8a84b;--teal:#007a65;--red:#c0392b;--orange:#d4700a;--blue:#1a5baa;--purple:#5a2fcc;--green:#1a7a3f;
+  --text:#2c2415;--muted:#6a5f4a;--border:rgba(138,106,26,0.2);--nav-bg:#fff;--header-bg:rgba(138,106,26,.07);
+}
+[data-theme="ocean"]{
+  --bg:#050e1a;--card:#081525;--card2:#0a1c30;
+  --gold:#38b6ff;--gold2:#80d4ff;--teal:#00e5c7;--red:#ff5f7e;--orange:#ff9f50;--blue:#2196f3;--purple:#aa60ff;--green:#26d68a;
+  --text:#d0e8f8;--muted:#5a88a8;--border:rgba(56,182,255,0.18);--nav-bg:#081525;--header-bg:rgba(56,182,255,.07);
+}
+[data-theme="desert"]{
+  --bg:#1a0f05;--card:#261605;--card2:#2e1a08;
+  --gold:#e8a030;--gold2:#f8c860;--teal:#70c8a0;--red:#e05040;--orange:#e87828;--blue:#6898d8;--purple:#a870d8;--green:#60b860;
+  --text:#f5e8c8;--muted:#9a7850;--border:rgba(232,160,48,0.2);--nav-bg:#261605;--header-bg:rgba(232,160,48,.08);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;transition:background-color .25s,color .15s,border-color .15s;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* Language font overrides */
+[lang="en"] body,[lang="en"] *{font-family:'Inter',sans-serif;}
+[lang="es"] body,[lang="es"] *{font-family:'Inter',sans-serif;}
+[lang="ur"] body,[lang="ur"] .ur{font-family:'Noto Nastaliq Urdu',serif;line-height:2;}
+
+/* Language visibility */
+.ar,.en,.es,.ur{display:none;}
+[lang="ar"] .ar{display:inline;}
+[lang="en"] .en{display:inline;}
+[lang="es"] .es{display:inline;}
+[lang="ur"] .ur{display:inline;}
+/* Block-level language elements */
+[lang="ar"] .ar-b{display:block;}
+[lang="en"] .en-b{display:block;}
+[lang="es"] .es-b{display:block;}
+[lang="ur"] .ur-b{display:block;}
+.ar-b,.en-b,.es-b,.ur-b{display:none;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;
+  padding:.5rem 1.1rem;background:var(--nav-bg);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.tbtn{display:flex;align-items:center;gap:.28rem;padding:.3rem .75rem;border-radius:20px;
+  border:1px solid var(--border);background:rgba(128,128,128,.07);color:var(--gold);
+  font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tbtn:hover{background:rgba(128,128,128,.15);}
+.tbtn.active-lang{background:rgba(200,168,75,.18);border-color:var(--gold);}
+.lang-group{display:flex;gap:.3rem;align-items:center;}
+.sep{width:1px;height:20px;background:var(--border);margin:0 .2rem;}
+.theme-dots{display:flex;gap:.35rem;align-items:center;}
+.tdot{width:15px;height:15px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;}
+.tdot:hover,.tdot.active{border-color:var(--text);transform:scale(1.18);}
+.tdot.d1{background:linear-gradient(135deg,#060c18,#c8a84b);}
+.tdot.d2{background:linear-gradient(135deg,#f4f1eb,#8a6a1a);}
+.tdot.d3{background:linear-gradient(135deg,#050e1a,#38b6ff);}
+.tdot.d4{background:linear-gradient(135deg,#1a0f05,#e8a030);}
+.lbl-sm{font-size:.63rem;color:var(--muted);}
+
+/* ── HEADER ── */
+.header{background:var(--header-bg);border-bottom:1px solid var(--border);
+  padding:1.1rem 1.5rem .85rem;text-align:center;}
+.header h1{font-size:clamp(1.2rem,3vw,2.1rem);color:var(--gold);margin-bottom:.2rem;line-height:1.4;}
+[lang="ar"] .header h1{font-family:'Amiri',serif;}
+[lang="ur"] .header h1{font-family:'Noto Nastaliq Urdu',serif;}
+.header p{color:var(--muted);font-size:.74rem;}
+.vtag{display:inline-block;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.25);
+  color:var(--teal);font-size:.62rem;padding:.11rem .58rem;border-radius:20px;margin-top:.28rem;}
+
+/* ── TABS ── */
+.nav{display:flex;overflow-x:auto;background:var(--nav-bg);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.tab{padding:.78rem 1.1rem;font-size:.77rem;font-weight:700;color:var(--muted);cursor:pointer;
+  border:none;background:none;font-family:inherit;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:all .2s;}
+.tab:hover{color:var(--gold);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(128,128,128,.04);}
+
+/* ── CONTENT ── */
+.content{max-width:1500px;margin:0 auto;padding:1.2rem;}
+.section{display:none;}.section.active{display:block;}
+
+/* ── DESCRIPTION ── */
+.desc-box{background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(58,123,213,.04));
+  border:1px solid var(--border);border-inline-start:3px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:.88rem 1.15rem;margin-bottom:1.3rem;
+  font-size:.79rem;color:var(--muted);line-height:1.9;}
+[lang="ar"] .desc-box,[lang="ur"] .desc-box{border-radius:10px 0 0 10px;}
+.desc-box strong{color:var(--gold);}
+
+/* ── KPI ── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.75rem;margin-bottom:1.3rem;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;
+  text-align:center;position:relative;overflow:hidden;transition:transform .2s;}
+.kpi:hover{transform:translateY(-2px);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi.g::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.kpi.t::before{background:linear-gradient(90deg,var(--teal),#00e5c7);}
+.kpi.b::before{background:linear-gradient(90deg,var(--blue),#6fa8ff);}
+.kpi.r::before{background:linear-gradient(90deg,var(--red),#ff9090);}
+.kpi.p::before{background:linear-gradient(90deg,var(--purple),#b47dff);}
+.kpi.gr::before{background:linear-gradient(90deg,var(--green),#52d68a);}
+.kpi .icon{font-size:1.4rem;margin-bottom:.25rem;}
+.kpi .val{font-size:1.45rem;font-weight:900;color:var(--gold);line-height:1;}
+.kpi .lbl{font-size:.67rem;color:var(--muted);margin-top:.18rem;}
+.kpi .sub{font-size:.6rem;color:var(--teal);margin-top:.12rem;}
+
+/* ── CHARTS ── */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.1rem;margin-bottom:1.3rem;}
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem;}
+.ctitle{font-size:.8rem;font-weight:700;color:var(--gold);margin-bottom:.7rem;}
+.ch{position:relative;height:250px;}
+
+/* ── TABLES ── */
+.twrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.3rem;}
+.thead-r{padding:.75rem 1rem;background:rgba(128,128,128,.05);border-bottom:1px solid var(--border);
+  font-size:.78rem;font-weight:700;color:var(--gold);}
+table.tbl{width:100%;border-collapse:collapse;font-size:.72rem;}
+.tbl th{padding:.55rem .8rem;color:var(--muted);font-size:.65rem;font-weight:600;
+  border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(128,128,128,.03);}
+.tbl td{padding:.5rem .8rem;border-bottom:1px solid rgba(128,128,128,.08);color:var(--text);}
+.tbl tr:hover td{background:rgba(128,128,128,.05);}
+/* th alignment by lang */
+[lang="ar"] .tbl th,[lang="ur"] .tbl th{text-align:right;}
+[lang="en"] .tbl th,[lang="es"] .tbl th{text-align:left;}
+
+/* ── BADGES ── */
+.bdg{display:inline-block;padding:.13rem .5rem;border-radius:10px;font-size:.6rem;font-weight:700;}
+.bc{background:rgba(224,92,92,.15);color:var(--red);border:1px solid rgba(224,92,92,.3);}
+.bh{background:rgba(255,144,32,.15);color:var(--orange);border:1px solid rgba(255,144,32,.3);}
+.bm{background:rgba(200,168,75,.15);color:var(--gold);border:1px solid rgba(200,168,75,.3);}
+.bg{background:rgba(0,201,167,.15);color:var(--teal);border:1px solid rgba(0,201,167,.3);}
+
+/* ── MAP ── */
+#mapWrap{position:relative;width:100%;height:600px;border-radius:10px;overflow:hidden;
+  border:1px solid var(--border);margin-bottom:1.3rem;}
+#theMap{width:100%;height:100%;background:#0a1020;}
+.map-ctrl{position:absolute;top:12px;z-index:1000;
+  background:rgba(6,12,24,.93);border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:.75rem;min-width:185px;}
+[lang="ar"] .map-ctrl,[lang="ur"] .map-ctrl{right:12px;direction:rtl;}
+[lang="en"] .map-ctrl,[lang="es"] .map-ctrl{left:12px;direction:ltr;}
+.map-ctrl h4{font-size:.72rem;color:var(--gold);margin-bottom:.5rem;font-weight:700;}
+.lbtn{display:flex;align-items:center;gap:.42rem;padding:.3rem .38rem;cursor:pointer;
+  border-radius:5px;width:100%;background:none;border:none;
+  color:#eee8d0;font-family:inherit;font-size:.7rem;transition:background .15s;}
+.lbtn:hover{background:rgba(255,255,255,.06);}
+.lbtn.on{background:rgba(200,168,75,.1);color:#f0d060;}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* ── MAP LEGEND ── */
+.map-legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1rem;padding:.9rem;}
+.leg-col h5{font-size:.76rem;font-weight:700;margin-bottom:.38rem;}
+.leg-col p{font-size:.69rem;color:var(--muted);line-height:1.65;}
+
+/* ── RECO CARDS ── */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:.9rem;margin-bottom:1.3rem;}
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;border-top:3px solid;}
+.rcard.rc{border-top-color:var(--red);}
+.rcard.rh{border-top-color:var(--orange);}
+.rtitle{font-size:.85rem;font-weight:700;margin-bottom:.1rem;}
+.rsub{font-size:.68rem;color:var(--muted);margin-bottom:.55rem;}
+.rstats{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.55rem;}
+.rstat{background:rgba(128,128,128,.07);border-radius:5px;padding:.33rem;text-align:center;}
+.rstat .rv{font-size:.9rem;font-weight:700;color:var(--gold);}
+.rstat .rl{font-size:.58rem;color:var(--muted);}
+.chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.4rem;}
+.chip{background:rgba(58,123,213,.12);border:1px solid rgba(58,123,213,.22);
+  color:var(--blue);font-size:.6rem;padding:.12rem .4rem;border-radius:3px;}
+.rnote{font-size:.67rem;color:var(--muted);margin-top:.4rem;line-height:1.55;}
+
+/* ── FORECAST CARDS ── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:.9rem;margin-bottom:1.3rem;}
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;border-top:3px solid;}
+.fcard .fti{font-size:.84rem;font-weight:700;margin-bottom:.1rem;}
+.fcard .fsb{font-size:.67rem;color:var(--muted);margin-bottom:.55rem;}
+.fstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.3rem;margin-bottom:.5rem;}
+.fstat{background:rgba(128,128,128,.07);border-radius:5px;padding:.33rem;text-align:center;}
+.fstat .fv{font-size:.85rem;font-weight:700;color:var(--gold);}
+.fstat .fl{font-size:.56rem;color:var(--muted);}
+.fbar-l{display:flex;justify-content:space-between;font-size:.67rem;margin-bottom:.15rem;}
+.fbar-t{background:rgba(128,128,128,.12);border-radius:3px;height:4px;}
+.fbar-f{height:100%;border-radius:3px;}
+
+/* ── SECTION TITLE ── */
+.sec-t{font-size:.9rem;font-weight:700;color:var(--gold);margin-bottom:.9rem;
+  border-bottom:1px solid var(--border);padding-bottom:.4rem;}
+
+/* ── RESOURCES ── */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:.9rem;margin-bottom:1.3rem;}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+.res-card h4{font-size:.8rem;font-weight:700;color:var(--gold);margin-bottom:.55rem;display:flex;align-items:center;gap:.38rem;}
+.res-card ul{list-style:none;padding:0;}
+.res-card li{font-size:.71rem;color:var(--muted);padding:.28rem 0;border-bottom:1px solid rgba(128,128,128,.08);line-height:1.6;}
+.res-card li:last-child{border-bottom:none;}
+.res-card li strong{color:var(--text);}
+.res-note{font-size:.69rem;background:rgba(224,92,92,.07);border:1px solid rgba(224,92,92,.18);
+  border-radius:8px;padding:.7rem .95rem;color:var(--muted);line-height:1.75;margin-bottom:1.1rem;}
+.res-note strong{color:var(--red);}
+
+/* ── POPUP ── */
+.leaflet-popup-content-wrapper{background:#0e1a30!important;border:1px solid rgba(200,168,75,.25)!important;
+  color:#eee8d0!important;border-radius:8px!important;box-shadow:0 8px 30px rgba(0,0,0,.6)!important;}
+.leaflet-popup-tip{background:#0e1a30!important;}
+.ptitle{font-weight:700;font-size:.8rem;color:#c8a84b;margin-bottom:.38rem;}
+.prow{font-size:.7rem;display:flex;gap:.32rem;margin-bottom:.15rem;}
+.plbl{color:#7a90ab;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:1.1rem;color:var(--muted);font-size:.65rem;border-top:1px solid var(--border);}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,.25);border-radius:3px;}
+
+@media(max-width:600px){
+  .cgrid{grid-template-columns:1fr;}.kpis{grid-template-columns:1fr 1fr;}
+  #mapWrap{height:420px;}.rgrid,.fgrid,.res-grid{grid-template-columns:1fr;}
+  .header h1{font-size:1.15rem;}.toolbar{gap:.35rem;}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- ══════════ TOOLBAR ══════════ -->
+<div class="toolbar">
+  <span class="lbl-sm"><span class="ar">اللغة:</span><span class="en">Language:</span><span class="es">Idioma:</span><span class="ur">زبان:</span></span>
+  <div class="lang-group">
+    <button class="tbtn active-lang" id="lb_ar" onclick="setLang('ar')">🇸🇦 عربي</button>
+    <button class="tbtn" id="lb_en" onclick="setLang('en')">🇺🇸 English</button>
+    <button class="tbtn" id="lb_es" onclick="setLang('es')">🇲🇽 Español</button>
+    <button class="tbtn" id="lb_ur" onclick="setLang('ur')">🇵🇰 اردو</button>
+  </div>
+  <div class="sep"></div>
+  <span class="lbl-sm"><span class="ar">السمة:</span><span class="en">Theme:</span><span class="es">Tema:</span><span class="ur">تھیم:</span></span>
+  <div class="theme-dots">
+    <div class="tdot d1 active" title="Dark" onclick="setTheme('dark',this)"></div>
+    <div class="tdot d2" title="Light" onclick="setTheme('light',this)"></div>
+    <div class="tdot d3" title="Ocean" onclick="setTheme('ocean',this)"></div>
+    <div class="tdot d4" title="Desert" onclick="setTheme('desert',this)"></div>
+  </div>
+</div>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
+  <h1>
+    <span class="ar">🕌 المسلمون في ولاية تكساس — تحليل شامل</span>
+    <span class="en">🕌 Muslims in Texas — Comprehensive Analysis</span>
+    <span class="es">🕌 Musulmanes en Texas — Análisis Integral</span>
+    <span class="ur">🕌 ٹیکساس میں مسلمان — جامع تجزیہ</span>
+  </h1>
+  <p>
+    <span class="ar">إحداثيات دقيقة للمساجد · تحليل الكثافة · فجوات الخدمة · توقعات النمو</span>
+    <span class="en">Verified Mosque Coordinates · Density Analysis · Service Gaps · Growth Forecasts</span>
+    <span class="es">Coordenadas de Mezquitas Verificadas · Análisis de Densidad · Brechas de Servicio · Pronósticos</span>
+    <span class="ur">تصدیق شدہ مساجد کے نقشہ جات · کثافت تجزیہ · خدمات میں کمی · نمو کی پیشن گوئی</span>
+  </p>
+  <div class="vtag">v5.1 · 2024–2025 · AR / EN / ES / UR</div>
+</div>
+
+<!-- ══════════ TABS ══════════ -->
+<div class="nav">
+  <button class="tab active" onclick="showTab('overview',this)">
+    <span class="ar">📊 نظرة عامة</span><span class="en">📊 Overview</span><span class="es">📊 Resumen</span><span class="ur">📊 جائزہ</span>
+  </button>
+  <button class="tab" onclick="showTab('map',this)">
+    <span class="ar">🗺 الخريطة</span><span class="en">🗺 Map</span><span class="es">🗺 Mapa</span><span class="ur">🗺 نقشہ</span>
+  </button>
+  <button class="tab" onclick="showTab('cities',this)">
+    <span class="ar">🏙 المدن</span><span class="en">🏙 Cities</span><span class="es">🏙 Ciudades</span><span class="ur">🏙 شہر</span>
+  </button>
+  <button class="tab" onclick="showTab('mosques',this)">
+    <span class="ar">🕌 المساجد</span><span class="en">🕌 Mosques</span><span class="es">🕌 Mezquitas</span><span class="ur">🕌 مساجد</span>
+  </button>
+  <button class="tab" onclick="showTab('density',this)">
+    <span class="ar">🔥 الكثافة</span><span class="en">🔥 Density</span><span class="es">🔥 Densidad</span><span class="ur">🔥 کثافت</span>
+  </button>
+  <button class="tab" onclick="showTab('reco',this)">
+    <span class="ar">📍 مقترحات</span><span class="en">📍 Recommendations</span><span class="es">📍 Recomendaciones</span><span class="ur">📍 تجاویز</span>
+  </button>
+  <button class="tab" onclick="showTab('resources',this)">
+    <span class="ar">📚 المصادر</span><span class="en">📚 Sources</span><span class="es">📚 Fuentes</span><span class="ur">📚 ماخذ</span>
+  </button>
+</div>
+
+<div class="content">
+
+<!-- ════════════════════════════ TAB 1: OVERVIEW ════ -->
+<div class="section active" id="overview">
+  <div class="desc-box">
+    <span class="ar">يرصد هذا التقرير الوضع الراهن للمجتمعات المسلمة في تكساس ويحلّله من جوانب ديموغرافية وجغرافية ومؤسسية. يجمع البيانات من مصادر أولية موثوقة — أبحاث Pew ومسوحات ARDA وإحصاءات التعداد الأمريكي — ليقدّم صورة دقيقة عن التوزيع السكاني وكثافة المساجد وفجوات الخدمة. يتضمن خرائط تفاعلية بإحداثيات محققة لأكثر من 55 مسجداً، ويرصد مناطق النقص الحاد، ويقترح مواقع جديدة لتلبية الاحتياجات المتنامية. تُختتم الدراسة بتوقعات نمو السكان المسلمين حتى عام 2040.</span>
+    <span class="en">This report analyzes the current landscape of Muslim communities across Texas from demographic, geographic, and institutional perspectives. Drawing on primary sources — Pew Research, ARDA surveys, and U.S. Census data — it maps Muslim population distribution, mosque density, and service gaps across major cities. It includes an interactive map with 55+ verified mosque coordinates, identifies critical shortage zones, and proposes new sites to meet growing needs. Concludes with Muslim population growth forecasts through 2040.</span>
+    <span class="es">Este informe analiza el panorama actual de las comunidades musulmanas en Texas desde perspectivas demográficas, geográficas e institucionales. Basado en fuentes primarias — Pew Research, encuestas ARDA y datos del Censo de EE.UU. — mapea la distribución de la población musulmana, densidad de mezquitas y brechas de servicio en las principales ciudades. Incluye un mapa interactivo con 55+ mezquitas verificadas, identifica zonas de escasez crítica y propone nuevos sitios. Concluye con pronósticos hasta 2040.</span>
+    <span class="ur">یہ رپورٹ ٹیکساس میں مسلم برادریوں کا آبادیاتی، جغرافیائی اور ادارہ جاتی جائزہ پیش کرتی ہے۔ Pew Research، ARDA سروے اور امریکی مردم شماری کے بنیادی ڈیٹا کی بنیاد پر مسلم آبادی کی تقسیم، مساجد کی کثافت اور خدمات میں کمی کا نقشہ پیش کیا گیا ہے۔ اس میں 55 سے زیادہ تصدیق شدہ مساجد کے ساتھ انٹرایکٹو نقشہ، کمی کے علاقے اور نئی مساجد کی تجاویز شامل ہیں۔ 2040 تک آبادی کی پیشن گوئی بھی شامل ہے۔</span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi g"><div class="icon">👥</div><div class="val">422K+</div>
+      <div class="lbl"><span class="ar">مسلمو تكساس 2024</span><span class="en">Texas Muslims 2024</span><span class="es">Musulmanes TX 2024</span><span class="ur">ٹیکساس مسلمان 2024</span></div>
+      <div class="sub"><span class="ar">الأعلى في الجنوب</span><span class="en">Highest in Southern US</span><span class="es">Mayor del Sur de EE.UU.</span><span class="ur">جنوبی امریکہ میں سب سے زیادہ</span></div>
+    </div>
+    <div class="kpi t"><div class="icon">🕌</div><div class="val">330+</div>
+      <div class="lbl"><span class="ar">مسجد ومركز إسلامي</span><span class="en">Mosques & Centers</span><span class="es">Mezquitas y Centros</span><span class="ur">مساجد اور اسلامی مراکز</span></div>
+      <div class="sub"><span class="ar">في 87 مدينة</span><span class="en">Across 87 cities</span><span class="es">En 87 ciudades</span><span class="ur">87 شہروں میں</span></div>
+    </div>
+    <div class="kpi b"><div class="icon">📍</div><div class="val">55</div>
+      <div class="lbl"><span class="ar">مسجد بإحداثيات محققة</span><span class="en">Verified GPS Mosques</span><span class="es">Mezquitas GPS verificadas</span><span class="ur">تصدیق شدہ جی پی ایس مساجد</span></div>
+    </div>
+    <div class="kpi r"><div class="icon">🚨</div><div class="val">5+</div>
+      <div class="lbl"><span class="ar">مدن بنقص حاد</span><span class="en">Cities Critical Shortage</span><span class="es">Ciudades con escasez crítica</span><span class="ur">سنگین کمی والے شہر</span></div>
+      <div class="sub">Frisco · Dallas · Irving · McKinney</div>
+    </div>
+    <div class="kpi p"><div class="icon">🚀</div><div class="val">740K</div>
+      <div class="lbl"><span class="ar">توقع 2040</span><span class="en">2040 Forecast</span><span class="es">Pronóstico 2040</span><span class="ur">2040 پیشن گوئی</span></div>
+      <div class="sub">+75% from 2025</div>
+    </div>
+    <div class="kpi gr"><div class="icon">📈</div><div class="val">+30.6%</div>
+      <div class="lbl"><span class="ar">نمو برينستون TX</span><span class="en">Princeton TX Growth</span><span class="es">Crecimiento Princeton TX</span><span class="ur">پرنسٹن TX نمو</span></div>
+      <div class="sub"><span class="ar">أسرع مدينة 2024</span><span class="en">Fastest US city 2024</span><span class="es">Ciudad más rápida 2024</span><span class="ur">2024 میں تیز ترین شہر</span></div>
+    </div>
+  </div>
+
+  <div class="cgrid">
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">📊 المسلمون في المدن الكبرى</span><span class="en">📊 Muslims in Major Cities</span><span class="es">📊 Musulmanes en Ciudades Principales</span><span class="ur">📊 بڑے شہروں میں مسلمان</span></div>
+      <div class="ch"><canvas id="ch_overview1"></canvas></div>
+    </div>
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">🕌 عدد المساجد لكل مدينة</span><span class="en">🕌 Mosques per City</span><span class="es">🕌 Mezquitas por Ciudad</span><span class="ur">🕌 ہر شہر میں مساجد</span></div>
+      <div class="ch"><canvas id="ch_overview2"></canvas></div>
+    </div>
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">🔥 كثافة: مسلم/مسجد</span><span class="en">🔥 Density: Muslims/Mosque</span><span class="es">🔥 Densidad: Musulmanes/Mezquita</span><span class="ur">🔥 کثافت: مسلمان/مسجد</span></div>
+      <div class="ch"><canvas id="ch_overview3"></canvas></div>
+    </div>
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">📈 توقعات 2025–2040</span><span class="en">📈 Forecast 2025–2040</span><span class="es">📈 Pronóstico 2025–2040</span><span class="ur">📈 پیشن گوئی 2025–2040</span></div>
+      <div class="ch"><canvas id="ch_overview4"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 2: MAP ══════════ -->
+<div class="section" id="map">
+  <div id="mapWrap"><div id="theMap"></div></div>
+  <div class="twrap">
+    <div class="thead-r"><span class="ar">🗺 دليل الطبقات</span><span class="en">🗺 Layer Guide</span><span class="es">🗺 Guía de Capas</span><span class="ur">🗺 تہوں کی رہنمائی</span></div>
+    <div class="map-legend-grid">
+      <div class="leg-col">
+        <h5 style="color:var(--teal);">🟢 <span class="ar">مواقع المساجد</span><span class="en">Mosque Locations</span><span class="es">Mezquitas</span><span class="ur">مساجد مقامات</span></h5>
+        <p><span class="ar">كبير=+1000 · متوسط=400–999 · صغير=أقل 400</span><span class="en">Large=1000+ · Medium=400–999 · Small=under 400</span><span class="es">Grande=1000+ · Mediano=400–999 · Pequeño=menos 400</span><span class="ur">بڑا=+1000 · درمیانہ=400–999 · چھوٹا=400 سے کم</span></p>
+      </div>
+      <div class="leg-col">
+        <h5 style="color:var(--orange);">🔶 <span class="ar">كثافة المسلمين</span><span class="en">Muslim Density</span><span class="es">Densidad Musulmana</span><span class="ur">مسلمانوں کی کثافت</span></h5>
+        <p>🔴 100K+ · 🟠 30K+ · 🟡 10K+ · 🔵 &lt;10K</p>
+      </div>
+      <div class="leg-col">
+        <h5 style="color:var(--red);">🔴 <span class="ar">نقص الخدمة</span><span class="en">Shortage Zones</span><span class="es">Zonas de Escasez</span><span class="ur">کمی کے علاقے</span></h5>
+        <p><span class="ar">أحمر=حاد · برتقالي=نسبي</span><span class="en">Red=critical · Orange=moderate</span><span class="es">Rojo=crítico · Naranja=moderado</span><span class="ur">سرخ=سنگین · نارنجی=اعتدال</span></p>
+      </div>
+      <div class="leg-col">
+        <h5 style="color:var(--gold);">⭐ <span class="ar">مواقع مقترحة</span><span class="en">Proposed Sites</span><span class="es">Sitios Propuestos</span><span class="ur">تجویز کردہ مقامات</span></h5>
+        <p>🚨 <span class="ar">قصوى</span><span class="en">Critical</span><span class="es">Crítico</span><span class="ur">فوری</span> · ⚠️ <span class="ar">عالية</span><span class="en">High</span><span class="es">Alto</span><span class="ur">اعلی</span> · 🔮 <span class="ar">مستقبل</span><span class="en">Future</span><span class="es">Futuro</span><span class="ur">مستقبل</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 3: CITIES ══════ -->
+<div class="section" id="cities">
+  <div style="overflow-x:auto;" class="twrap">
+    <div class="thead-r"><span class="ar">📋 التوزيع السكاني — 2024</span><span class="en">📋 Population Distribution — 2024</span><span class="es">📋 Distribución Poblacional — 2024</span><span class="ur">📋 آبادی کی تقسیم — 2024</span></div>
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="ar">المدينة</span><span class="en">City</span><span class="es">Ciudad</span><span class="ur">شہر</span></th>
+        <th><span class="ar">المقاطعة</span><span class="en">County</span><span class="es">Condado</span><span class="ur">کاؤنٹی</span></th>
+        <th><span class="ar">السكان</span><span class="en">Total Pop.</span><span class="es">Población</span><span class="ur">کل آبادی</span></th>
+        <th><span class="ar">المسلمون</span><span class="en">Muslims</span><span class="es">Musulmanes</span><span class="ur">مسلمان</span></th>
+        <th>%</th>
+        <th><span class="ar">مساجد</span><span class="en">Mosques</span><span class="es">Mezquitas</span><span class="ur">مساجد</span></th>
+        <th><span class="ar">كثافة</span><span class="en">Density</span><span class="es">Densidad</span><span class="ur">کثافت</span></th>
+        <th><span class="ar">نمو</span><span class="en">Growth</span><span class="es">Crecim.</span><span class="ur">نمو</span></th>
+        <th><span class="ar">الوضع</span><span class="en">Status</span><span class="es">Estado</span><span class="ur">حالت</span></th>
+      </tr></thead>
+      <tbody id="citiesTbody"></tbody>
+    </table>
+  </div>
+  <div class="cgrid">
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">📊 المسلمون بالمدينة</span><span class="en">📊 Muslims by City</span><span class="es">📊 Musulmanes por Ciudad</span><span class="ur">📊 شہر کے مطابق مسلمان</span></div>
+      <div class="ch"><canvas id="ch_cities1"></canvas></div>
+    </div>
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">📐 نسبة المسلمين %</span><span class="en">📐 Muslims % of City</span><span class="es">📐 Musulmanes % de Ciudad</span><span class="ur">📐 شہر میں مسلمانوں کا فیصد</span></div>
+      <div class="ch"><canvas id="ch_cities2"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 4: MOSQUES ══════ -->
+<div class="section" id="mosques">
+
+  <div class="sec-t"><span class="ar">🕌 أرلينغتون · مانسفيلد — Tarrant County</span><span class="en">🕌 Arlington · Mansfield — Tarrant County</span><span class="es">🕌 Arlington · Mansfield — Condado Tarrant</span><span class="ur">🕌 ارلنگٹن · مانسفیلڈ — Tarrant County</span></div>
+  <div style="overflow-x:auto;" class="twrap">
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="ar">المسجد</span><span class="en">Mosque</span><span class="es">Mezquita</span><span class="ur">مسجد</span></th>
+        <th><span class="ar">العنوان</span><span class="en">Address</span><span class="es">Dirección</span><span class="ur">پتہ</span></th>
+        <th>GPS</th>
+        <th><span class="ar">طاقة</span><span class="en">Cap.</span><span class="es">Cap.</span><span class="ur">گنجائش</span></th>
+        <th><span class="ar">تأسيس</span><span class="en">Est.</span><span class="es">Fund.</span><span class="ur">قیام</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>ISAT — Islamic Society of Arlington</strong></td><td>1700 S Center St, Arlington TX 76010</td><td>32.7058, -97.0897</td><td>~600</td><td>1983</td></tr>
+        <tr><td><strong>Dar Elsalam Islamic Center</strong></td><td>500 W Road to Six Flags St, Arlington TX 76011</td><td>32.7533, -97.0862</td><td>~500</td><td>2003</td></tr>
+        <tr><td><strong>Dar El-Eman Islamic Center</strong></td><td>5511 Mansfield Rd, Arlington TX 76017</td><td>32.6857, -97.1150</td><td>~400</td><td>2005</td></tr>
+        <tr><td><strong>Dar El-Quran / Elhedaya ✅</strong></td><td>350 Aaron Ave, Arlington TX 76012</td><td>32.7312, -97.1068</td><td>~350</td><td>2008</td></tr>
+        <tr><td><strong>Zia Ul-Quran Masjid ✅</strong></td><td>2425 Carter Dr, Arlington TX 76014</td><td>32.7025, -97.0611</td><td>~300</td><td>—</td></tr>
+        <tr><td><strong>Mansfield Islamic Center</strong></td><td>6401 New York Ave #135, Arlington TX 76018</td><td>32.5992, -97.1187</td><td>~400</td><td>2010</td></tr>
+        <tr><td><strong>Unity Islamic Center ✅</strong></td><td>651 E Debbie Ln Bldg 400, Mansfield TX 76063</td><td>32.5695, -97.1289</td><td>~350</td><td>2018</td></tr>
+        <tr><td>Keller Islamic Center</td><td>3601 Keller Hicks Rd, Fort Worth TX 76244</td><td>32.9356, -97.2298</td><td>~400</td><td>2008</td></tr>
+        <tr><td>Colleyville Islamic Assoc.</td><td>Cheek-Sparger Rd, Colleyville TX 76034</td><td>32.8832, -97.1503</td><td>~300</td><td>2010</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-t"><span class="ar">🕌 إيرفينغ</span><span class="en">🕌 Irving</span><span class="es">🕌 Irving</span><span class="ur">🕌 ارونگ</span></div>
+  <div style="overflow-x:auto;" class="twrap">
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="ar">المسجد</span><span class="en">Mosque</span><span class="es">Mezquita</span><span class="ur">مسجد</span></th>
+        <th><span class="ar">العنوان</span><span class="en">Address</span><span class="es">Dirección</span><span class="ur">پتہ</span></th>
+        <th>GPS</th>
+        <th><span class="ar">طاقة</span><span class="en">Cap.</span><span class="es">Cap.</span><span class="ur">گنجائش</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>Islamic Center of Irving (ICI)</strong></td><td>2555 N Esters Rd, Irving TX 75062</td><td>32.8593, -96.9955</td><td>~3,000</td></tr>
+        <tr><td><strong>Valley Ranch Islamic Center</strong></td><td>351 Ranchview Dr, Irving TX 75063</td><td>32.9012, -96.9887</td><td>~900</td></tr>
+        <tr><td>Las Colinas Islamic Center</td><td>6210 N Belt Line Rd #160, Irving TX 75063</td><td>32.8710, -96.9630</td><td>~400</td></tr>
+        <tr><td>Annoor Center</td><td>3636 W Northgate Dr, Irving TX 75062</td><td>32.8404, -97.0007</td><td>~400</td></tr>
+        <tr><td>Maktab Foundation</td><td>2204 W Walnut Hill Ln, Irving TX 75038</td><td>32.8655, -96.9601</td><td>~300</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-t"><span class="ar">🕌 فريسكو · ماكيني · آلين — Collin County ⚠</span><span class="en">🕌 Frisco · McKinney · Allen — Collin County ⚠</span><span class="es">🕌 Frisco · McKinney · Allen — Condado Collin ⚠</span><span class="ur">🕌 فریسکو · میک کنی · ایلن — Collin County ⚠</span></div>
+  <div style="overflow-x:auto;" class="twrap">
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="ar">المسجد</span><span class="en">Mosque</span><span class="es">Mezquita</span><span class="ur">مسجد</span></th>
+        <th><span class="ar">العنوان</span><span class="en">Address</span><span class="es">Dirección</span><span class="ur">پتہ</span></th>
+        <th><span class="ar">المدينة</span><span class="en">City</span><span class="es">Ciudad</span><span class="ur">شہر</span></th>
+        <th>GPS</th>
+      </tr></thead>
+      <tbody>
+        <tr><td><strong>Islamic Center of Frisco</strong></td><td>Frisco, TX</td><td>Frisco</td><td>33.1482, -96.8203</td></tr>
+        <tr><td>MTO Shahmaghsoudi</td><td>8470 Stacy Rd</td><td>McKinney</td><td>33.1390, -96.8113</td></tr>
+        <tr><td><strong>McKinney Islamic Association (MIA)</strong></td><td>2940 W Eldorado Pkwy</td><td>McKinney</td><td>33.1943, -96.6686</td></tr>
+        <tr><td>IACC — Islamic Assoc. Collin County</td><td>Stetson Dr, McKinney TX</td><td>McKinney</td><td>33.1852, -96.5903</td></tr>
+        <tr><td><strong>Islamic Association of Allen</strong></td><td>190 E Stacy Rd #3200, Allen TX</td><td>Allen</td><td>33.0983, -96.6801</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 5: DENSITY ══════ -->
+<div class="section" id="density">
+  <div class="kpis">
+    <div class="kpi r"><div class="icon">🚨</div><div class="val">4,000</div>
+      <div class="lbl"><span class="ar">مسلم/مسجد فريسكو</span><span class="en">Muslims/Mosque Frisco</span><span class="es">Musul./Mezquita Frisco</span><span class="ur">مسلمان/مسجد فریسکو</span></div>
+    </div>
+    <div class="kpi r"><div class="icon">⚠️</div><div class="val">3,929</div>
+      <div class="lbl"><span class="ar">مسلم/مسجد دالاس</span><span class="en">Muslims/Mosque Dallas</span><span class="es">Musul./Mezquita Dallas</span><span class="ur">مسلمان/مسجد ڈلاس</span></div>
+    </div>
+    <div class="kpi b"><div class="icon">🕌</div><div class="val">130+</div>
+      <div class="lbl"><span class="ar">مسجد مطلوب فوراً</span><span class="en">Mosques Urgently Needed</span><span class="es">Mezquitas Urgentes</span><span class="ur">فوری ضرورت مساجد</span></div>
+    </div>
+    <div class="kpi g"><div class="icon">✅</div><div class="val">~717</div>
+      <div class="lbl"><span class="ar">مسلم/مسجد هيوستن</span><span class="en">Muslims/Mosque Houston</span><span class="es">Musul./Mezquita Houston</span><span class="ur">مسلمان/مسجد ہیوسٹن</span></div>
+    </div>
+  </div>
+  <div class="cgrid">
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">🔥 كثافة مفصّلة (مسلم/مسجد)</span><span class="en">🔥 Detailed Density (Muslims/Mosque)</span><span class="es">🔥 Densidad Detallada</span><span class="ur">🔥 تفصیلی کثافت</span></div>
+      <div class="ch" style="height:300px;"><canvas id="ch_density1"></canvas></div>
+    </div>
+    <div class="ccard">
+      <div class="ctitle"><span class="ar">📊 عجز المساجد: الحالي مقابل المطلوب</span><span class="en">📊 Deficit: Current vs. Required</span><span class="es">📊 Déficit: Actual vs. Requerido</span><span class="ur">📊 کمی: موجودہ بمقابلہ ضروری</span></div>
+      <div class="ch" style="height:300px;"><canvas id="ch_density2"></canvas></div>
+    </div>
+  </div>
+  <div class="twrap">
+    <div class="thead-r"><span class="ar">📋 جدول الكثافة الكامل</span><span class="en">📋 Full Density Table</span><span class="es">📋 Tabla Completa de Densidad</span><span class="ur">📋 مکمل کثافت جدول</span></div>
+    <div style="overflow-x:auto;">
+    <table class="tbl">
+      <thead><tr>
+        <th><span class="ar">المدينة</span><span class="en">City</span><span class="es">Ciudad</span><span class="ur">شہر</span></th>
+        <th><span class="ar">المسلمون</span><span class="en">Muslims</span><span class="es">Musl.</span><span class="ur">مسلمان</span></th>
+        <th><span class="ar">مساجد</span><span class="en">Mosques</span><span class="es">Mezq.</span><span class="ur">مساجد</span></th>
+        <th><span class="ar">كثافة</span><span class="en">Density</span><span class="es">Densidad</span><span class="ur">کثافت</span></th>
+        <th><span class="ar">مطلوب</span><span class="en">Required</span><span class="es">Requerido</span><span class="ur">ضروری</span></th>
+        <th><span class="ar">عجز</span><span class="en">Deficit</span><span class="es">Déficit</span><span class="ur">کمی</span></th>
+        <th><span class="ar">الأولوية</span><span class="en">Priority</span><span class="es">Prioridad</span><span class="ur">ترجیح</span></th>
+      </tr></thead>
+      <tbody id="densityTbody"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 6: RECO ══════════ -->
+<div class="section" id="reco">
+  <div class="sec-t">
+    <span class="ar">🚨 أولوية قصوى</span><span class="en">🚨 Top Priority — Immediate Need</span>
+    <span class="es">🚨 Prioridad Máxima — Necesidad Inmediata</span><span class="ur">🚨 اعلی ترین ترجیح — فوری ضرورت</span>
+  </div>
+  <div class="rgrid">
+    <div class="rcard rc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="rtitle">Frisco</div>
+          <div class="rsub">Collin/Denton Co. · +8%/yr · <span class="ar">أسرع نمو DFW</span><span class="en">Fastest DFW growth</span><span class="es">Crecimiento DFW más rápido</span><span class="ur">DFW میں تیز ترین نمو</span></div></div>
+        <span class="bdg bc">🚨</span>
+      </div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">4,000</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">12</div><div class="rl"><span class="ar">مطلوب</span><span class="en">Needed</span><span class="es">Necesario</span><span class="ur">ضروری</span></div></div>
+      </div>
+      <div class="chips"><span class="chip">Frisco NE (Hwy 380)</span><span class="chip">Frisco SW (Lebanon Rd)</span></div>
+    </div>
+    <div class="rcard rc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="rtitle">Irving</div>
+          <div class="rsub">Dallas Co. · 30–40K Muslims · DFW Core</div></div>
+        <span class="bdg bc">🚨</span>
+      </div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">3,500</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">30+</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Irving S (Story Rd)</span><span class="chip">MacArthur Blvd E</span></div>
+    </div>
+    <div class="rcard rc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="rtitle">McKinney</div>
+          <div class="rsub">Collin Co. · +8%/yr · <span class="ar">نمو متسارع</span><span class="en">Rapid expansion</span><span class="es">Expansión rápida</span><span class="ur">تیز توسیع</span></div></div>
+        <span class="bdg bc">🚨</span>
+      </div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">3,333</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">10</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Craig Ranch</span><span class="chip">Stonebridge Ranch</span></div>
+      <div class="rnote">⚠ <span class="ar">توسعة MIA معلّقة — دعم قانوني مطلوب</span><span class="en">MIA expansion suspended — legal support needed</span><span class="es">Expansión MIA suspendida — apoyo legal necesario</span><span class="ur">MIA توسیع معطل — قانونی مدد درکار</span></div>
+    </div>
+    <div class="rcard rc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="rtitle">Allen</div>
+          <div class="rsub">Collin Co. · +7%/yr</div></div>
+        <span class="bdg bc">🚨</span>
+      </div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">3,000</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">7</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Allen W (Hwy 75 N)</span><span class="chip">Stacy Rd</span></div>
+    </div>
+  </div>
+
+  <div class="sec-t">
+    <span class="ar">⚠ أولوية عالية</span><span class="en">⚠ High Priority</span><span class="es">⚠ Alta Prioridad</span><span class="ur">⚠ اعلی ترجیح</span>
+  </div>
+  <div class="rgrid">
+    <div class="rcard rh">
+      <div style="display:flex;justify-content:space-between;"><div>
+        <div class="rtitle">Mansfield</div><div class="rsub">Tarrant Co. · +6%/yr · 2 mosques</div>
+      </div><span class="bdg bh">⚠</span></div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">1,750</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">3</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Broad St Central</span><span class="chip">Hwy 287 N</span></div>
+    </div>
+    <div class="rcard rh">
+      <div style="display:flex;justify-content:space-between;"><div>
+        <div class="rtitle">Arlington</div><div class="rsub">Tarrant Co. · 400K pop. · +4%/yr</div>
+      </div><span class="bdg bh">⚠</span></div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">1,875</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">11</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Collins St N</span><span class="chip">S Arlington (Sublett)</span></div>
+    </div>
+    <div class="rcard rh">
+      <div style="display:flex;justify-content:space-between;"><div>
+        <div class="rtitle">Round Rock / Cedar Park</div><div class="rsub">Williamson Co. · +7%/yr</div>
+      </div><span class="bdg bh">⚠</span></div>
+      <div class="rstats">
+        <div class="rstat"><div class="rv">2,000</div><div class="rl">M/Mosque</div></div>
+        <div class="rstat"><div class="rv">9</div><div class="rl">Needed</div></div>
+      </div>
+      <div class="chips"><span class="chip">Round Rock N</span><span class="chip">Cedar Park NW</span></div>
+    </div>
+  </div>
+
+  <div class="sec-t">
+    <span class="ar">🔮 مدن تحت الرادار 2028–2040</span><span class="en">🔮 Under-the-Radar Cities 2028–2040</span>
+    <span class="es">🔮 Ciudades en el Radar 2028–2040</span><span class="ur">🔮 پوشیدہ شہر 2028–2040</span>
+  </div>
+  <div class="fgrid">
+    <div class="fcard" style="border-top-color:var(--red);">
+      <div class="fti">🚨 Princeton & Celina</div>
+      <div class="fsb">Collin Co. · +30.6%/yr · <span class="ar">لا يوجد مسجد!</span><span class="en">Zero mosques!</span><span class="es">¡Sin mezquitas!</span><span class="ur">کوئی مسجد نہیں!</span></div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+30.6%</div><div class="fl">Annual</div></div>
+        <div class="fstat"><div class="fv">~2,500</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">0</div><div class="fl">Mosques</div></div>
+      </div>
+      <div class="fbar-l"><span>2030 est.</span><span style="color:var(--red);">~12,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:90%;background:var(--red);"></div></div>
+    </div>
+    <div class="fcard" style="border-top-color:var(--red);">
+      <div class="fti">🚨 Wylie · Sachse · Rowlett</div>
+      <div class="fsb">Collin/Rockwall · <span class="ar">زحف شرقي من دالاس</span><span class="en">E. migration from Dallas</span><span class="es">Migración E. desde Dallas</span><span class="ur">ڈلاس سے مشرقی نقل مکانی</span></div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+2.5%</div><div class="fl">Growth</div></div>
+        <div class="fstat"><div class="fv">~5,000</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">1</div><div class="fl">Mosque</div></div>
+      </div>
+      <div class="fbar-l"><span>2032 est.</span><span style="color:var(--red);">~15,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:80%;background:var(--red);"></div></div>
+    </div>
+    <div class="fcard" style="border-top-color:var(--orange);">
+      <div class="fti">⚠ Lewisville · Flower Mound</div>
+      <div class="fsb">Denton Co. · +2.2%/yr</div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+2.2%</div><div class="fl">Growth</div></div>
+        <div class="fstat"><div class="fv">~6,000</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">3</div><div class="fl">Mosques</div></div>
+      </div>
+      <div class="fbar-l"><span>2035 est.</span><span style="color:var(--orange);">~18,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:70%;background:var(--orange);"></div></div>
+    </div>
+    <div class="fcard" style="border-top-color:var(--orange);">
+      <div class="fti">⚠ Denton (UNT)</div>
+      <div class="fsb">Denton Co. · +13.2% · ~4,000 Muslim students</div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+13.2%</div><div class="fl">Growth</div></div>
+        <div class="fstat"><div class="fv">~7,000</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">4</div><div class="fl">Mosques</div></div>
+      </div>
+      <div class="fbar-l"><span>2030 est.</span><span style="color:var(--orange);">~14,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:65%;background:var(--orange);"></div></div>
+    </div>
+    <div class="fcard" style="border-top-color:var(--gold);">
+      <div class="fti">📌 Georgetown · Liberty Hill</div>
+      <div class="fsb">Williamson Co. · Liberty Hill +14.7%/yr</div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+14.7%</div><div class="fl">Liberty Hill</div></div>
+        <div class="fstat"><div class="fv">~2,500</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">1</div><div class="fl">Mosque</div></div>
+      </div>
+      <div class="fbar-l"><span>2033 est.</span><span style="color:var(--gold);">~10,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:55%;background:var(--gold);"></div></div>
+    </div>
+    <div class="fcard" style="border-top-color:var(--gold);">
+      <div class="fti">📌 Manor · Pflugerville · Elgin</div>
+      <div class="fsb">Travis/Bastrop Co. · Manor +52.6%</div>
+      <div class="fstats">
+        <div class="fstat"><div class="fv">+52.6%</div><div class="fl">Manor</div></div>
+        <div class="fstat"><div class="fv">~2,000</div><div class="fl">Muslims</div></div>
+        <div class="fstat"><div class="fv">1</div><div class="fl">Mosque</div></div>
+      </div>
+      <div class="fbar-l"><span>2033 est.</span><span style="color:var(--gold);">~8,000</span></div>
+      <div class="fbar-t"><div class="fbar-f" style="width:50%;background:var(--gold);"></div></div>
+    </div>
+  </div>
+
+  <div class="ccard">
+    <div class="ctitle"><span class="ar">📈 توقعات الزحف السكاني 2025–2040</span><span class="en">📈 Population Migration Forecast 2025–2040</span><span class="es">📈 Pronóstico Migración 2025–2040</span><span class="ur">📈 آبادی کی نقل مکانی کی پیشن گوئی 2025–2040</span></div>
+    <div class="ch" style="height:290px;"><canvas id="ch_forecast"></canvas></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB 7: RESOURCES ═══ -->
+<div class="section" id="resources">
+  <div class="res-note">
+    <strong><span class="ar">⚠ ملاحظة:</span><span class="en">⚠ Note:</span><span class="es">⚠ Nota:</span><span class="ur">⚠ نوٹ:</span></strong>
+    <span class="ar"> لا يسجّل التعداد الأمريكي الانتماء الديني، لذا تستند جميع أرقام المسلمين إلى تقديرات علمية.</span>
+    <span class="en"> The U.S. Census Bureau does not record religion. All Muslim population figures are scholarly estimates.</span>
+    <span class="es"> El Censo de EE.UU. no registra religión. Todas las cifras de musulmanes son estimaciones académicas.</span>
+    <span class="ur"> امریکی مردم شماری مذہب ریکارڈ نہیں کرتی۔ تمام مسلم آبادی کے اعداد علمی تخمینے ہیں۔</span>
+  </div>
+
+  <div class="sec-t"><span class="ar">📊 مصادر البيانات</span><span class="en">📊 Data Sources</span><span class="es">📊 Fuentes de Datos</span><span class="ur">📊 ڈیٹا کے ماخذ</span></div>
+  <div class="res-grid">
+    <div class="res-card">
+      <h4>🏛 <span class="ar">أكاديمية وحكومية</span><span class="en">Academic & Government</span><span class="es">Académicas y Gubernamentales</span><span class="ur">تعلیمی اور سرکاری</span></h4>
+      <ul>
+        <li><strong>ARDA (2020)</strong> — 313K–422K Muslims in TX</li>
+        <li><strong>Pew Research Center (2017, 2021)</strong> — State-level Muslim estimates</li>
+        <li><strong>U.S. Census Bureau ACS 2023</strong> — Total population & demographics</li>
+        <li><strong>NCTCOG (2025)</strong> — DFW urban growth forecasts</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>🕌 <span class="ar">مجتمع إسلامي</span><span class="en">Islamic Community</span><span class="es">Comunidad Islámica</span><span class="ur">اسلامی کمیونٹی</span></h4>
+      <ul>
+        <li><strong>Islamic Center of Irving (ICI)</strong> — Imam Zia Sheikh: 30–40K Muslims</li>
+        <li><strong>ISGH Houston</strong> — 50,000+ congregants, 209+ mosques</li>
+        <li><strong>McKinney Islamic Association (MIA)</strong> — Collin County data</li>
+        <li>arlingtonmuslims.org · darelquran.org · unityislamiccenter.org</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📰 <span class="ar">إعلامية وصحفية</span><span class="en">Media & Press</span><span class="es">Medios y Prensa</span><span class="ur">میڈیا اور صحافت</span></h4>
+      <ul>
+        <li><strong>Texas Monthly (2016)</strong> — "Faith and Hope" 422,000 Muslims</li>
+        <li><strong>Wikipedia — Islam in Houston (2025)</strong> — 3%+ of Houston population</li>
+        <li><strong>Language Unlimited Research (2025)</strong> — Dallas 150K, Houston 280K</li>
+        <li><strong>GlobalMuslimLife (2025)</strong> — Houston metro 120K–200K Muslims</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📡 <span class="ar">تحقق جغرافي</span><span class="en">GPS Verification</span><span class="es">Verificación GPS</span><span class="ur">جی پی ایس تصدیق</span></h4>
+      <ul>
+        <li><strong>PrayersConnect.com</strong> — US mosque GPS database</li>
+        <li><strong>MasjidsInUSA.com</strong> — Comprehensive mosque directory</li>
+        <li><strong>GuideStar / Candid</strong> — IRS nonprofit registration</li>
+        <li><strong>Google Maps · Waze · OpenStreetMap</strong> — Field coordinate verification</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📈 <span class="ar">نمو وتوقعات</span><span class="en">Growth & Forecasts</span><span class="es">Crecimiento y Pronósticos</span><span class="ur">نمو اور پیشن گوئیاں</span></h4>
+      <ul>
+        <li><strong>Census Bureau Vintage 2024</strong> — Princeton TX +30.6%, fastest US city</li>
+        <li><strong>Rockwall County Planning Dept.</strong> — +75.8% growth by 2030</li>
+        <li><strong>ISPU</strong> — 800 Muslims/mosque optimal service standard</li>
+        <li><strong>tshaonline.org</strong> — Texas State Historical Assoc.</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>🔗 <span class="ar">مواقع رسمية للمساجد</span><span class="en">Official Mosque Websites</span><span class="es">Sitios Oficiales de Mezquitas</span><span class="ur">مساجد کی سرکاری ویب سائٹس</span></h4>
+      <ul>
+        <li>arlingtonmuslims.org · darelquran.org</li>
+        <li>unityislamiccenter.org · ziaulquranmasjid.com</li>
+        <li>dareleman.org · mansfieldmasjid.org</li>
+        <li>vric.org · lascolinasmasjid.org</li>
+        <li>miamasjid.org · isgh.org</li>
+        <li>alsadatravels.com/muslim-population/dallas-guide</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-t"><span class="ar">📝 سجل التغييرات — v5.1</span><span class="en">📝 Changelog — v5.1</span><span class="es">📝 Registro de Cambios — v5.1</span><span class="ur">📝 تبدیلیوں کا ریکارڈ — v5.1</span></div>
+  <div class="twrap">
+    <table class="tbl">
+      <thead><tr>
+        <th>Field</th>
+        <th><span class="ar">التغيير</span><span class="en">Change</span><span class="es">Cambio</span><span class="ur">تبدیلی</span></th>
+        <th><span class="ar">المصدر</span><span class="en">Source</span><span class="es">Fuente</span><span class="ur">ماخذ</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Languages</td><td>Added Spanish 🇲🇽 & Urdu 🇵🇰 (v5.1)</td><td>Google Fonts: Noto Nastaliq Urdu</td></tr>
+        <tr><td>Houston Muslims</td><td>57K (2012) → 175K (2025 est.)</td><td>Wikipedia Islam in Houston · GlobalMuslimLife</td></tr>
+        <tr><td>Dallas Muslims</td><td>120K confirmed range</td><td>AlsadaTravels · Pew + ISGH analysis</td></tr>
+        <tr><td>Irving Muslims</td><td>30,000–40,000 confirmed</td><td>Imam Zia Sheikh, ICI</td></tr>
+        <tr><td>Texas Total</td><td>313K (ARDA 2020) → 422K+ (2024 est.)</td><td>Texas Monthly · Language Unlimited · ARDA</td></tr>
+        <tr><td>Map</td><td>Fixed base tile layer, CartoDB dark</td><td>basemaps.cartocdn.com</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="footer">
+  <p>Muslims in Texas — Comprehensive Analysis v5.1 · AR / EN / ES / UR</p>
+  <p style="margin-top:.28rem;">Sources: ARDA · Pew Research · Census Bureau · ISGH · ICI · PrayersConnect · GuideStar</p>
+  <p style="margin-top:.22rem;opacity:.4;">
+    <span class="ar">⚠ أرقام المسلمين تقديرية</span>
+    <span class="en">⚠ Muslim figures are scholarly estimates</span>
+    <span class="es">⚠ Las cifras son estimaciones académicas</span>
+    <span class="ur">⚠ مسلم اعداد علمی تخمینے ہیں</span>
+  </p>
+</div>
+
+<script>
+/* ── DATA ──────────────────────────────────────── */
+const CITIES=[
+  {en:'Houston',     county:'Harris',            totPop:2304580,muslims:175000,mosques:209,pct:7.5,growth:4,lat:29.760,lng:-95.369},
+  {en:'Dallas',      county:'Dallas',            totPop:1310000,muslims:120000,mosques:28, pct:9.2,growth:4,lat:32.778,lng:-96.795},
+  {en:'Irving',      county:'Dallas',            totPop:256000, muslims:35000, mosques:10, pct:13.7,growth:4,lat:32.814,lng:-96.950},
+  {en:'Richardson',  county:'Dallas/Collin',     totPop:122000, muslims:18000, mosques:8,  pct:14.8,growth:4,lat:32.948,lng:-96.729},
+  {en:'Plano',       county:'Collin/Dallas',     totPop:296000, muslims:20000, mosques:8,  pct:6.8, growth:5,lat:33.019,lng:-96.699},
+  {en:'Frisco',      county:'Collin/Denton',     totPop:240000, muslims:12000, mosques:3,  pct:5.0, growth:8,lat:33.150,lng:-96.823},
+  {en:'McKinney',    county:'Collin',            totPop:222000, muslims:10000, mosques:3,  pct:4.5, growth:8,lat:33.197,lng:-96.615},
+  {en:'Allen',       county:'Collin',            totPop:112000, muslims:6000,  mosques:2,  pct:5.4, growth:7,lat:33.103,lng:-96.671},
+  {en:'Arlington',   county:'Tarrant',           totPop:400000, muslims:15000, mosques:8,  pct:3.75,growth:4,lat:32.736,lng:-97.108},
+  {en:'Mansfield',   county:'Tarrant',           totPop:82000,  muslims:3500,  mosques:2,  pct:4.3, growth:6,lat:32.563,lng:-97.141},
+  {en:'Fort Worth',  county:'Tarrant',           totPop:970000, muslims:18000, mosques:12, pct:1.9, growth:3,lat:32.755,lng:-97.330},
+  {en:'Grand Prairie',county:'Tarrant/Dallas',   totPop:203000, muslims:8000,  mosques:4,  pct:3.9, growth:3,lat:32.746,lng:-97.022},
+  {en:'Katy',        county:'Harris/FtBend',     totPop:22000,  muslims:8000,  mosques:6,  pct:3.6, growth:6,lat:29.785,lng:-95.824},
+  {en:'Sugar Land',  county:'Fort Bend',         totPop:122000, muslims:10000, mosques:5,  pct:8.2, growth:5,lat:29.620,lng:-95.634},
+  {en:'Pearland',    county:'Brazoria',          totPop:127000, muslims:4000,  mosques:3,  pct:3.1, growth:5,lat:29.563,lng:-95.286},
+  {en:'Austin',      county:'Travis',            totPop:985000, muslims:25000, mosques:15, pct:2.5, growth:5,lat:30.267,lng:-97.743},
+  {en:'Round Rock',  county:'Williamson',        totPop:136000, muslims:6000,  mosques:3,  pct:4.4, growth:7,lat:30.508,lng:-97.678},
+  {en:'San Antonio', county:'Bexar',             totPop:1490000,muslims:10000, mosques:10, pct:0.7, growth:2,lat:29.424,lng:-98.494},
+  {en:'El Paso',     county:'El Paso',           totPop:690000, muslims:3500,  mosques:4,  pct:0.5, growth:1,lat:31.761,lng:-106.485},
+];
+
+/* ── BUILD TABLES ──────────────────────────────── */
+(function(){
+  const tb=document.getElementById('citiesTbody');
+  tb.innerHTML=CITIES.map(c=>{
+    const d=Math.round(c.muslims/c.mosques);
+    const col=d>3000?'var(--red)':d>2000?'var(--orange)':d>1200?'var(--gold)':'var(--teal)';
+    const b=d>3000?'bc':d>2000?'bh':d>1200?'bm':'bg';
+    return `<tr>
+      <td><strong>${c.en}</strong></td>
+      <td style="color:var(--muted);font-size:.65rem;">${c.county}</td>
+      <td>${c.totPop.toLocaleString()}</td>
+      <td>~${c.muslims.toLocaleString()}</td>
+      <td>${c.pct}%</td>
+      <td>${c.mosques}</td>
+      <td style="color:${col};font-weight:700;">${d.toLocaleString()}</td>
+      <td style="color:${c.growth>6?'var(--red)':c.growth>4?'var(--orange)':'var(--teal)'};">+${c.growth}%</td>
+      <td><span class="bdg ${b}">${d>3000?'🚨 Critical':d>2000?'⚠ Shortage':d>1200?'Moderate':'✅ OK'}</span></td>
+    </tr>`;
+  }).join('');
+})();
+
+(function(){
+  const sorted=[...CITIES].sort((a,b)=>Math.round(b.muslims/b.mosques)-Math.round(a.muslims/a.mosques));
+  document.getElementById('densityTbody').innerHTML=sorted.map(c=>{
+    const d=Math.round(c.muslims/c.mosques),need=Math.ceil(c.muslims/800),def=Math.max(0,need-c.mosques);
+    const col=d>3000?'var(--red)':d>2000?'var(--orange)':d>1200?'var(--gold)':'var(--teal)';
+    const b=d>3000?'bc':d>2000?'bh':d>1200?'bm':'bg';
+    return `<tr>
+      <td><strong>${c.en}</strong></td>
+      <td>${c.muslims.toLocaleString()}</td><td>${c.mosques}</td>
+      <td style="color:${col};font-weight:700;">${d.toLocaleString()}</td>
+      <td style="color:var(--teal);">${need}</td>
+      <td style="color:${def>10?'var(--red)':def>5?'var(--orange)':'var(--teal)'};">${def>0?'−'+def:'✅'}</td>
+      <td><span class="bdg ${b}">${d>3000?'🚨 Critical':d>2000?'⚠ High':d>1200?'Moderate':'✅'}</span></td>
+    </tr>`;
+  }).join('');
+})();
+
+/* ── MOSQUE / MAP DATA ────────────────────────── */
+const MOSQUES=[
+  {n:'ISAT Arlington',city:'Arlington',lat:32.7058,lng:-97.0897,cap:600},
+  {n:'Dar Elsalam',city:'Arlington',lat:32.7533,lng:-97.0862,cap:500},
+  {n:'Dar El-Eman',city:'Arlington',lat:32.6857,lng:-97.1150,cap:400},
+  {n:'Dar El-Quran ✅',city:'Arlington',lat:32.7312,lng:-97.1068,cap:350},
+  {n:'Zia Ul-Quran ✅',city:'Arlington',lat:32.7025,lng:-97.0611,cap:300},
+  {n:'Mansfield Islamic Center',city:'Mansfield',lat:32.5992,lng:-97.1187,cap:400},
+  {n:'Unity Islamic Center ✅',city:'Mansfield',lat:32.5695,lng:-97.1289,cap:350},
+  {n:'ICI Irving',city:'Irving',lat:32.8593,lng:-96.9955,cap:3000},
+  {n:'VRIC Irving',city:'Irving',lat:32.9012,lng:-96.9887,cap:900},
+  {n:'Las Colinas IC',city:'Irving',lat:32.8710,lng:-96.9630,cap:400},
+  {n:'Annoor Center',city:'Irving',lat:32.8404,lng:-97.0007,cap:400},
+  {n:'Maktab Foundation',city:'Irving',lat:32.8655,lng:-96.9601,cap:300},
+  {n:'IC Frisco',city:'Frisco',lat:33.1482,lng:-96.8203,cap:500},
+  {n:'MIA McKinney',city:'McKinney',lat:33.1943,lng:-96.6686,cap:800},
+  {n:'IACC McKinney',city:'McKinney',lat:33.1852,lng:-96.5903,cap:400},
+  {n:'IA Allen',city:'Allen',lat:33.0983,lng:-96.6801,cap:350},
+  {n:'IANT Richardson',city:'Richardson',lat:32.9475,lng:-96.7294,cap:1500},
+  {n:'EPIC Plano',city:'Plano',lat:33.0171,lng:-96.6298,cap:1200},
+  {n:'DeSoto HOP',city:'DeSoto',lat:32.5901,lng:-96.8543,cap:1000},
+  {n:'Grand Prairie Masjid',city:'Grand Prairie',lat:32.7459,lng:-97.0217,cap:300},
+  {n:'IATC Fort Worth',city:'Fort Worth',lat:32.7443,lng:-97.3812,cap:600},
+  {n:'Al-Hedayah FW',city:'Fort Worth',lat:32.7891,lng:-97.2203,cap:500},
+  {n:'Keller IC',city:'Keller',lat:32.9356,lng:-97.2298,cap:400},
+  {n:'Al-Noor ISGH',city:'Houston',lat:29.7555,lng:-95.5681,cap:1200},
+  {n:"Da'wah Center",city:'Houston',lat:29.7484,lng:-95.3698,cap:800},
+  {n:'Katy IC',city:'Katy',lat:29.7851,lng:-95.8172,cap:1000},
+  {n:'Ismaili Center',city:'Houston',lat:29.7612,lng:-95.3968,cap:5000},
+  {n:'ISA Austin',city:'Austin',lat:30.3229,lng:-97.7220,cap:600},
+  {n:'IC San Antonio',city:'San Antonio',lat:29.5143,lng:-98.6072,cap:500},
+];
+const NEEDS=[
+  {n:'Frisco 🚨',lat:33.150,lng:-96.823,r:9000,col:'#e05c5c',need:12},
+  {n:'Irving 🚨',lat:32.814,lng:-96.950,r:8000,col:'#e05c5c',need:30},
+  {n:'Dallas 🚨',lat:32.780,lng:-96.800,r:14000,col:'#e74c3c',need:66},
+  {n:'McKinney 🚨',lat:33.197,lng:-96.615,r:7000,col:'#e05c5c',need:10},
+  {n:'Allen ⚠',lat:33.103,lng:-96.671,r:5000,col:'#ff6b2b',need:7},
+  {n:'Mansfield ⚠',lat:32.563,lng:-97.141,r:5500,col:'#ff9020',need:3},
+  {n:'Arlington E ⚠',lat:32.736,lng:-97.060,r:6000,col:'#ffa030',need:4},
+  {n:'Sugar Land ⚠',lat:29.620,lng:-95.590,r:6000,col:'#ffa030',need:6},
+  {n:'Round Rock ⚠',lat:30.508,lng:-97.678,r:7000,col:'#ff9020',need:9},
+];
+const PROPOSED=[
+  {n:'🚨 Frisco NE (Hwy 380)',lat:33.195,lng:-96.778,p:'c'},
+  {n:'🚨 Frisco SW (Lebanon Rd)',lat:33.115,lng:-96.857,p:'c'},
+  {n:'🚨 McKinney N (Craig Ranch)',lat:33.230,lng:-96.630,p:'c'},
+  {n:'🚨 Irving S (Story Rd)',lat:32.795,lng:-96.970,p:'c'},
+  {n:'🚨 Allen W (Hwy 75 N)',lat:33.115,lng:-96.720,p:'c'},
+  {n:'⚠ Mansfield Central',lat:32.568,lng:-97.150,p:'h'},
+  {n:'⚠ Arlington S (Sublett)',lat:32.682,lng:-97.140,p:'h'},
+  {n:'⚠ Sugar Land E',lat:29.620,lng:-95.590,p:'h'},
+  {n:'⚠ Round Rock N',lat:30.548,lng:-97.660,p:'h'},
+  {n:'🔮 Princeton TX',lat:33.179,lng:-96.497,p:'f'},
+  {n:'🔮 Celina TX',lat:33.299,lng:-96.782,p:'f'},
+  {n:'🔮 Wylie / Sachse',lat:33.015,lng:-96.540,p:'f'},
+  {n:'🔮 Liberty Hill',lat:30.633,lng:-97.640,p:'f'},
+  {n:'🔮 Denton UNT',lat:33.215,lng:-97.133,p:'f'},
+];
+
+/* ── LANGUAGE ─────────────────────────────────── */
+const LANGS=['ar','en','es','ur'];
+let curLang='ar';
+function setLang(l){
+  curLang=l;
+  const root=document.getElementById('htmlRoot');
+  root.setAttribute('lang',l);
+  root.setAttribute('dir',['ar','ur'].includes(l)?'rtl':'ltr');
+  LANGS.forEach(x=>document.getElementById('lb_'+x)?.classList.remove('active-lang'));
+  document.getElementById('lb_'+l)?.classList.add('active-lang');
+  if(mapDone) fixMapCtrl();
+}
+
+/* ── THEME ────────────────────────────────────── */
+function setTheme(t,el){
+  document.body.setAttribute('data-theme',t);
+  document.querySelectorAll('.tdot').forEach(d=>d.classList.remove('active'));
+  el.classList.add('active');
+  setTimeout(rebuildCharts,60);
+}
+
+/* ── TAB NAV ──────────────────────────────────── */
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='map'&&!mapDone) buildMap();
+}
+
+/* ── MAP ──────────────────────────────────────── */
+let mapDone=false,theMap,LG={};
+function fixMapCtrl(){
+  const c=document.querySelector('.map-ctrl');
+  if(!c)return;
+  const rtl=['ar','ur'].includes(curLang);
+  if(rtl){c.style.right='12px';c.style.left='auto';c.style.direction='rtl';}
+  else{c.style.left='12px';c.style.right='auto';c.style.direction='ltr';}
+}
+function buildMap(){
+  mapDone=true;
+  theMap=L.map('theMap',{center:[32.85,-96.9],zoom:9});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; <a href="https://www.openstreetmap.org/">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains:'abcd',maxZoom:19
+  }).addTo(theMap);
+
+  LG.pop=L.layerGroup();
+  CITIES.forEach(c=>{
+    const col=c.muslims>100000?'#ff2200':c.muslims>30000?'#ff7700':c.muslims>10000?'#ffaa00':'#4488ff';
+    L.circle([c.lat,c.lng],{radius:Math.sqrt(c.muslims)*80,color:col,fillColor:col,fillOpacity:.22,weight:1.5,opacity:.7})
+    .bindPopup(`<div class="ptitle">👥 ${c.en}</div>
+      <div class="prow"><span class="plbl">Muslims:</span><span style="color:#c8a84b;font-weight:700;">~${c.muslims.toLocaleString()}</span></div>
+      <div class="prow"><span class="plbl">Mosques:</span>${c.mosques}</div>
+      <div class="prow"><span class="plbl">Density:</span><span style="color:${Math.round(c.muslims/c.mosques)>2000?'#e05c5c':'#00c9a7'};">${Math.round(c.muslims/c.mosques).toLocaleString()} M/Mosque</span></div>
+      <div class="prow"><span class="plbl">Growth:</span>+${c.growth}%/yr</div>`)
+    .addTo(LG.pop);
+  });
+
+  LG.mosques=L.layerGroup();
+  MOSQUES.forEach(m=>{
+    const sz=m.cap>=1000?28:m.cap>=400?22:16;
+    const bg=m.cap>=1000?'#0d5c2b':m.cap>=400?'#1a6b3c':'#2d8050';
+    L.marker([m.lat,m.lng],{icon:L.divIcon({
+      html:`<div style="background:${bg};border:2px solid #00c9a7;width:${sz}px;height:${sz}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${Math.round(sz*.55)}px;box-shadow:0 0 ${sz}px rgba(0,201,167,.5);">🕌</div>`,
+      className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
+    })}).bindPopup(`<div class="ptitle">🕌 ${m.n}</div>
+      <div class="prow"><span class="plbl">City:</span>${m.city}</div>
+      <div class="prow"><span class="plbl">Capacity:</span><span style="color:#00c9a7;">${m.cap.toLocaleString()}</span></div>`)
+    .addTo(LG.mosques);
+  });
+
+  LG.need=L.layerGroup();
+  NEEDS.forEach(z=>{
+    L.circle([z.lat,z.lng],{radius:z.r,color:z.col,fillColor:z.col,fillOpacity:.08,weight:2,dashArray:'8,6',opacity:.7})
+    .bindPopup(`<div class="ptitle" style="color:${z.col};">⚠ ${z.n}</div><div class="prow"><span class="plbl">Needed:</span><span style="color:#e05c5c;font-weight:700;">${z.need} mosques</span></div>`)
+    .addTo(LG.need);
+  });
+
+  LG.proposed=L.layerGroup();
+  PROPOSED.forEach(p=>{
+    const cc=p.p==='c'?'#e05c5c':p.p==='h'?'#ff9020':'#7c4dff';
+    const em=p.p==='c'?'🚨':p.p==='h'?'⚠️':'🔮';
+    L.marker([p.lat,p.lng],{icon:L.divIcon({
+      html:`<div style="background:${cc}22;border:2px solid ${cc};width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 0 10px ${cc}66;">${em}</div>`,
+      className:'',iconSize:[24,24],iconAnchor:[12,12]
+    })}).bindPopup(`<div class="ptitle">${p.n}</div>`)
+    .addTo(LG.proposed);
+  });
+
+  Object.values(LG).forEach(lg=>lg.addTo(theMap));
+
+  const ctrl=document.createElement('div');
+  ctrl.className='map-ctrl';
+  ctrl.innerHTML=`
+    <h4>🎛 Layers</h4>
+    <button class="lbtn on" onclick="toggleL('pop',this)"><div class="dot" style="background:#ff7700;"></div>Muslim Density</button>
+    <button class="lbtn on" onclick="toggleL('mosques',this)"><div class="dot" style="background:#00c9a7;"></div>Mosques (55)</button>
+    <button class="lbtn on" onclick="toggleL('need',this)"><div class="sq" style="border:2px dashed #e05c5c;background:transparent;"></div>Shortage Zones</button>
+    <button class="lbtn on" onclick="toggleL('proposed',this)"><div class="sq" style="background:#c8a84b22;border:2px solid #c8a84b;"></div>Proposed Sites</button>`;
+  document.getElementById('mapWrap').appendChild(ctrl);
+  fixMapCtrl();
+}
+function toggleL(n,btn){
+  btn.classList.toggle('on');
+  if(theMap.hasLayer(LG[n])) theMap.removeLayer(LG[n]);
+  else LG[n].addTo(theMap);
+}
+
+/* ── CHARTS ───────────────────────────────────── */
+Chart.defaults.font.family="'Cairo','Inter',sans-serif";
+let charts=[];
+function getCC(){
+  const s=getComputedStyle(document.body);
+  const g=v=>s.getPropertyValue(v).trim();
+  return{gold:g('--gold'),teal:g('--teal'),red:g('--red'),orange:g('--orange'),blue:g('--blue'),purple:g('--purple'),muted:g('--muted'),border:'rgba(128,128,128,.1)'};
+}
+function destroyCharts(){charts.forEach(c=>{try{c.destroy();}catch(e){}});charts=[];}
+function rebuildCharts(){destroyCharts();buildCharts();}
+
+function buildCharts(){
+  const cc=getCC();
+  Chart.defaults.color=cc.muted;
+  const top11=CITIES.slice(0,11);
+  const ds=[...CITIES].sort((a,b)=>Math.round(b.muslims/b.mosques)-Math.round(a.muslims/a.mosques)).slice(0,12);
+  const defS=[...CITIES].filter(c=>Math.max(0,Math.ceil(c.muslims/800)-c.mosques)>0).sort((a,b)=>Math.ceil(b.muslims/800)-b.mosques-(Math.ceil(a.muslims/800)-a.mosques)).slice(0,12);
+  const opt=(iH,leg)=>({responsive:true,maintainAspectRatio:false,plugins:{legend:leg?{position:'bottom',labels:{boxWidth:12,padding:7,font:{size:10},color:cc.muted}}:{display:false}},scales:{x:{grid:{color:cc.border},ticks:{color:cc.muted}},y:{grid:{color:cc.border},ticks:{color:cc.muted}}}});
+
+  charts.push(new Chart(document.getElementById('ch_overview1'),{type:'bar',
+    data:{labels:top11.map(c=>c.en),datasets:[{data:top11.map(c=>c.muslims),
+      backgroundColor:top11.map(c=>c.muslims>50000?cc.teal+'aa':c.muslims>15000?cc.gold+'aa':cc.red+'99'),borderWidth:0,borderRadius:4}]},
+    options:{...opt(true),indexAxis:'y',scales:{x:{grid:{color:cc.border},ticks:{callback:v=>(v/1000).toFixed(0)+'K',color:cc.muted}},y:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_overview2'),{type:'bar',
+    data:{labels:top11.map(c=>c.en),datasets:[{data:top11.map(c=>c.mosques),
+      backgroundColor:top11.map(c=>c.mosques>=20?cc.teal+'aa':c.mosques>=8?cc.gold+'aa':cc.red+'99'),borderWidth:0,borderRadius:4}]},
+    options:{...opt(),scales:{x:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}},y:{grid:{color:cc.border},ticks:{color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_overview3'),{type:'bar',
+    data:{labels:ds.map(c=>c.en),datasets:[{data:ds.map(c=>Math.round(c.muslims/c.mosques)),
+      backgroundColor:ds.map(c=>{const v=Math.round(c.muslims/c.mosques);return v>3000?cc.red+'cc':v>2000?cc.orange+'bb':v>1200?cc.gold+'aa':cc.teal+'aa';}),borderWidth:0,borderRadius:4}]},
+    options:{...opt(),scales:{x:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}},y:{grid:{color:cc.border},ticks:{callback:v=>v.toLocaleString(),color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_overview4'),{type:'line',
+    data:{labels:['2020','2025','2028','2031','2035','2040'],datasets:[
+      {label:'Optimistic',data:[422000,490000,575000,680000,820000,1010000],borderColor:cc.teal,borderWidth:2,tension:.4,fill:false,pointRadius:3},
+      {label:'Moderate',  data:[422000,455000,520000,605000,720000,870000], borderColor:cc.gold,borderWidth:2.5,tension:.4,fill:false,pointRadius:3},
+      {label:'Conservative',data:[422000,435000,490000,555000,640000,755000],borderColor:cc.blue,borderWidth:2,borderDash:[5,5],tension:.4,fill:false,pointRadius:3},
+    ]},options:{...opt(false,true),scales:{x:{grid:{color:cc.border},ticks:{color:cc.muted}},y:{grid:{color:cc.border},ticks:{callback:v=>(v/1000).toFixed(0)+'K',color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_cities1'),{type:'bar',
+    data:{labels:CITIES.map(c=>c.en),datasets:[{data:CITIES.map(c=>c.muslims),backgroundColor:cc.gold+'99',borderWidth:0,borderRadius:3}]},
+    options:{...opt(true),indexAxis:'y',scales:{x:{grid:{color:cc.border},ticks:{callback:v=>(v/1000).toFixed(0)+'K',color:cc.muted}},y:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_cities2'),{type:'bar',
+    data:{labels:CITIES.map(c=>c.en),datasets:[{data:CITIES.map(c=>c.pct),
+      backgroundColor:CITIES.map(c=>c.pct>8?cc.teal+'bb':c.pct>4?cc.gold+'aa':cc.blue+'99'),borderWidth:0,borderRadius:3}]},
+    options:{...opt(),scales:{x:{grid:{display:false},ticks:{font:{size:8},color:cc.muted}},y:{grid:{color:cc.border},ticks:{callback:v=>v+'%',color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_density1'),{type:'bar',
+    data:{labels:ds.map(c=>c.en),datasets:[{data:ds.map(c=>Math.round(c.muslims/c.mosques)),
+      backgroundColor:ds.map(c=>{const v=Math.round(c.muslims/c.mosques);return v>3000?cc.red+'cc':v>2000?cc.orange+'bb':v>1200?cc.gold+'aa':cc.teal+'aa';}),borderWidth:0,borderRadius:4}]},
+    options:{...opt(true),indexAxis:'y',scales:{x:{grid:{color:cc.border},ticks:{callback:v=>v.toLocaleString(),color:cc.muted}},y:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_density2'),{type:'bar',
+    data:{labels:defS.map(c=>c.en),datasets:[
+      {label:'Current',data:defS.map(c=>c.mosques),backgroundColor:cc.teal+'88',borderWidth:0,borderRadius:3},
+      {label:'Needed',data:defS.map(c=>Math.max(0,Math.ceil(c.muslims/800)-c.mosques)),backgroundColor:cc.red+'aa',borderWidth:0,borderRadius:3}
+    ]},options:{...opt(false,true),scales:{x:{grid:{display:false},ticks:{font:{size:9},color:cc.muted}},y:{grid:{color:cc.border},ticks:{color:cc.muted}}}}}));
+
+  charts.push(new Chart(document.getElementById('ch_forecast'),{type:'line',
+    data:{labels:['2025','2027','2029','2031','2033','2035','2037','2040'],datasets:[
+      {label:'Princeton/Celina',data:[2500,5000,8000,12000,17000,23000,29000,36000],borderColor:cc.red,borderWidth:2.5,tension:.4,pointRadius:3},
+      {label:'Wylie/Sachse/Rowlett',data:[5000,7000,9500,12500,16000,20000,25000,31000],borderColor:cc.orange,borderWidth:2,tension:.4,pointRadius:3},
+      {label:'Lewisville/Flower Mound',data:[6000,8000,10500,13000,16000,19000,22000,27000],borderColor:cc.gold,borderWidth:2,tension:.4,pointRadius:3},
+      {label:'Denton',data:[7000,9000,11000,13500,16500,19500,22500,27000],borderColor:cc.teal,borderWidth:2,tension:.4,pointRadius:3},
+      {label:'Georgetown/Liberty Hill',data:[2500,4000,6000,8500,11500,14500,17500,22000],borderColor:cc.blue,borderWidth:2,tension:.4,pointRadius:3},
+      {label:'Manor/Pflugerville',data:[2000,3500,5500,8000,11000,14000,17000,21000],borderColor:cc.purple,borderWidth:2,borderDash:[4,4],tension:.4,pointRadius:3},
+    ]},options:{...opt(false,true),scales:{x:{grid:{color:cc.border},ticks:{color:cc.muted}},y:{grid:{color:cc.border},ticks:{callback:v=>(v/1000).toFixed(0)+'K',color:cc.muted}}}}}));
+}
+
+/* ── INIT ──────────────────────────────────────── */
+buildCharts();
+</script>
+</body>
+</html>
