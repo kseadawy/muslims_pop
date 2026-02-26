@@ -281,7 +281,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.72rem;}
     <span class="ar">📊 نظرة عامة</span><span class="en">📊 Overview</span><span class="es">📊 Resumen</span><span class="ur">📊 جائزہ</span>
   </button>
   <button class="tab" onclick="showTab('map',this)">
-    <span class="ar">🗺 الخريطة</span><span class="en">🗺 Map</span><span class="es">🗺 Mapa</span><span class="ur">🗺 نقشہ</span>
+    <span class="ar">🗺 الخريطة التفاعلية</span><span class="en">🗺 Map</span><span class="es">🗺 Mapa</span><span class="ur">🗺 نقشہ</span>
   </button>
   <button class="tab" onclick="showTab('cities',this)">
     <span class="ar">🏙 المدن</span><span class="en">🏙 Cities</span><span class="es">🏙 Ciudades</span><span class="ur">🏙 شہر</span>
@@ -290,13 +290,13 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.72rem;}
     <span class="ar">🕌 المساجد</span><span class="en">🕌 Mosques</span><span class="es">🕌 Mezquitas</span><span class="ur">🕌 مساجد</span>
   </button>
   <button class="tab" onclick="showTab('density',this)">
-    <span class="ar">🔥 الكثافة</span><span class="en">🔥 Density</span><span class="es">🔥 Densidad</span><span class="ur">🔥 کثافت</span>
+    <span class="ar">🔥 الكثافة الفجوات</span><span class="en">🔥 Density & Gaps</span><span class="es">🔥 Densidad</span><span class="ur">🔥 کثافت</span>
   </button>
   <button class="tab" onclick="showTab('reco',this)">
-    <span class="ar">📍 مقترحات</span><span class="en">📍 Recommendations</span><span class="es">📍 Recomendaciones</span><span class="ur">📍 تجاویز</span>
+    <span class="ar">📍 مواقع مقترحة</span><span class="en">📍 Recommended Sites</span><span class="es">📍 Recomendaciones</span><span class="ur">📍 تجاویز</span>
   </button>
   <button class="tab" onclick="showTab('resources',this)">
-    <span class="ar">📚 المصادر</span><span class="en">📚 Sources</span><span class="es">📚 Fuentes</span><span class="ur">📚 ماخذ</span>
+    <span class="ar">📚 المصادر والبيانات</span><span class="en">📚 Date Sources</span><span class="es">📚 Fuentes</span><span class="ur">📚 ماخذ</span>
   </button>
 </div>
 
@@ -925,7 +925,7 @@ const PROPOSED=[
 
 /* ── LANGUAGE ─────────────────────────────────── */
 const LANGS=['ar','en','es','ur'];
-let curLang='ar';
+let curLang='en';
 function setLang(l){
   curLang=l;
   const root=document.getElementById('htmlRoot');
